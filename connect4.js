@@ -32,8 +32,8 @@ function makeHtmlBoard() {
   const top = document.createElement("tr");
   top.setAttribute("id", "column-top");
   // create the individual head cells and set ids relative to their position
-  // also add an event listener that handles clicking on head cells
-  // appends each head cell to the top column element
+  // also add an event listener that handles clicking on the head cells
+  // appends each head cell to the column-top element
   for (let x = 0; x < WIDTH; x++) {
     const headCell = document.createElement("td");
     headCell.setAttribute("id", `top-${x}`);
@@ -88,7 +88,7 @@ function checkForWin() {
   function _win(cells) {
 
     // TODO: Check four cells to see if they're all legal & all color of current
-    // player
+    // player boolean
 
   }
 
