@@ -18,9 +18,10 @@ const board = []; // array of rows, each row is array of cells  (board[y][x])
  *    board = array of rows, each row is array of cells  (board[y][x])
  */
 
-function makeBoard(board) {
+function makeBoard() {
   // set "board" to empty HEIGHT x WIDTH matrix array
   board.push(Array(HEIGHT).fill(null).map(() => Array(WIDTH).fill(null)));
+
 }
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
@@ -66,46 +67,72 @@ function makeHtmlBoard() {
  *    (return null if filled) */
 
 function findSpotForCol(x) {
-  // TODO: write the real version of this, rather than always returning 5
-  return 5;
+  for (let y = 5; y >= 0; y--) {
+    if (!board[y][x]) {
+      return y;
+    }
+  }
+  return null;
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
 
 function placeInTable(y, x) {
-  // TODO: make a div and insert into correct table cell
+  const cellPiece = document.createElement('div');
+  cellPiece.classList.add('piece');
+  if (currPlayer === 1) {
+    cellPiece.classList.add('p1');
+  } else {
+    cellPiece.classList.add('p2');
+  }
+  const cell = document.getElementById(`c-${y}-${x}`);
+  cell.append(cellPiece);
 }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
 
 function checkForWin() {
-
   /** _win:
    * takes input array of 4 cell coordinates [ [y, x], [y, x], [y, x], [y, x] ]
    * returns true if all are legal coordinates for a cell & all cells match
    * currPlayer
    */
   function _win(cells) {
-
-    // TODO: Check four cells to see if they're all legal & all color of current
+    // Check four cells to see if they're all legal & all color of current
     // player boolean
-
+    for (let cell of cells) {
+      if (cell[0] > 5 || cell[1] > 6) {       //[0] --> y [1]--> x
+        return false;
+      }
+      const gamePiece = document.getElementById(`c-${cell[0]}-${cell[1]}`);
+      // FIXME:possibly come back to firstChild identifier
+      const pieceColor = gamePiece.firstChild;
+      if (currPlayer === 1 && pieceColor.classList.contains('p1')) {              //if current player is 1 and if the piece color is red, then continue
+        continue;
+      } else if (currPlayer === 2 && pieceColor.classList.contains('p2')) {      //if current player is 2 and if the piece color is blue, then continue
+        continue;
+      } else {
+        return false;
+      }
+    }
+    return true;
   }
+
 
   // using HEIGHT and WIDTH, generate "check list" of coordinates
   // for 4 cells (starting here) for each of the different
   // ways to win: horizontal, vertical, diagonalDR, diagonalDL
   for (let y = 0; y < HEIGHT; y++) {
     for (let x = 0; x < WIDTH; x++) {
-      // TODO: assign values to the below variables for each of the ways to win
+      // assign values to the below variables for each of the ways to win
       // horizontal has been assigned for you
       // each should be an array of 4 cell coordinates:
       // [ [y, x], [y, x], [y, x], [y, x] ]
 
       let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-      let vert;
-      let diagDL;
-      let diagDR;
+      let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
+      let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
+      let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
 
       // find winner (only checking each win-possibility as needed)
       if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
@@ -153,7 +180,7 @@ function handleClick(evt) {
 /** Start game. */
 
 function start() {
-  makeBoard(board);
+  makeBoard();
   makeHtmlBoard();
 }
 
