@@ -19,10 +19,10 @@ const board = []; // array of rows, each row is array of cells  (board[y][x])
 
 function makeBoard() {
   // set "board" to empty HEIGHT x WIDTH matrix array
-  // TODO: add a more detail comment on what this method does
   // other way you can do it is to write two for loops:
   // outer for loop called row, inner for loop pushes "null" to array
-  // can also use Array.from
+  // can also use Array.from and use one for loop, pushing in the Array.from
+    // return value into the const board
   board.push(...Array(HEIGHT).fill(null).map(() => Array(WIDTH).fill(null)));
 }
 
