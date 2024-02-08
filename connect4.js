@@ -1,5 +1,4 @@
 "use strict";
-
 /** Connect Four
  *
  * Player 1 and 2 alternate turns. On each turn, a piece is dropped down a
@@ -20,8 +19,11 @@ const board = []; // array of rows, each row is array of cells  (board[y][x])
 
 function makeBoard() {
   // set "board" to empty HEIGHT x WIDTH matrix array
-  board.push(Array(HEIGHT).fill(null).map(() => Array(WIDTH).fill(null)));
-
+  // TODO: add a more detail comment on what this method does
+  // other way you can do it is to write two for loops:
+  // outer for loop called row, inner for loop pushes "null" to array
+  // can also use Array.from
+  board.push(...Array(HEIGHT).fill(null).map(() => Array(WIDTH).fill(null)));
 }
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
@@ -32,6 +34,7 @@ function makeHtmlBoard() {
   // create a column element that is of type "table-row"
   const top = document.createElement("tr");
   top.setAttribute("id", "column-top");
+
   // create the individual head cells and set ids relative to their position
   // also add an event listener that handles clicking on the head cells
   // appends each head cell to the column-top element
@@ -63,12 +66,13 @@ function makeHtmlBoard() {
   }
 }
 
+
 /** findSpotForCol: given column x, return y coordinate of furthest-down spot
  *    (return null if filled) */
 
 function findSpotForCol(x) {
-  for (let y = 5; y >= 0; y--) {
-    if (!board[y][x]) {
+  for (let y = HEIGHT - 1; y >= 0; y--) {
+    if (board[y][x] === null) {
       return y;
     }
   }
@@ -76,21 +80,16 @@ function findSpotForCol(x) {
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
-
+// use string template literal instead of the if statement
 function placeInTable(y, x) {
   const cellPiece = document.createElement('div');
   cellPiece.classList.add('piece');
-  if (currPlayer === 1) {
-    cellPiece.classList.add('p1');
-  } else {
-    cellPiece.classList.add('p2');
-  }
+  cellPiece.classList.add(`p${currPlayer}`);
   const cell = document.getElementById(`c-${y}-${x}`);
   cell.append(cellPiece);
 }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
-
 function checkForWin() {
   /** _win:
    * takes input array of 4 cell coordinates [ [y, x], [y, x], [y, x], [y, x] ]
@@ -100,18 +99,12 @@ function checkForWin() {
   function _win(cells) {
     // Check four cells to see if they're all legal & all color of current
     // player boolean
+    // dont use magic numbers use WIDTH and HEIGHT
     for (let cell of cells) {
-      if (cell[0] > 5 || cell[1] > 6) {       //[0] --> y [1]--> x
+      if (cell[0] < 0 || cell[0] > HEIGHT - 1 || cell[1] < 0 || cell[1] > WIDTH - 1) {
         return false;
       }
-      const gamePiece = document.getElementById(`c-${cell[0]}-${cell[1]}`);
-      // FIXME:possibly come back to firstChild identifier
-      const pieceColor = gamePiece.firstChild;
-      if (currPlayer === 1 && pieceColor.classList.contains('p1')) {              //if current player is 1 and if the piece color is red, then continue
-        continue;
-      } else if (currPlayer === 2 && pieceColor.classList.contains('p2')) {      //if current player is 2 and if the piece color is blue, then continue
-        continue;
-      } else {
+      if(board[cell[0]][cell[1]] !== currPlayer) {
         return false;
       }
     }
@@ -144,7 +137,7 @@ function checkForWin() {
 }
 
 /** endGame: announce game end */
-
+// reenable this later
 function endGame(msg) {
   alert(msg);
 }
@@ -162,19 +155,23 @@ function handleClick(evt) {
   }
 
   // place piece in board and add to HTML table
-  // TODO: add line to update global `board` variable with new piece
+  // add line to update global `board` variable with new piece
   placeInTable(y, x);
-
+  board[y][x] = currPlayer;
   // check for win
   if (checkForWin()) {
     return endGame(`Player ${currPlayer} won!`);
   }
 
   // check for tie: if top row is filled, board is filled
-  // TODO: check if all cells in board are filled; if so, call endGame
-
+  // refactor to only check top row
+  if(board[0].every(x => x !== null)) {
+    return endGame("It's a tie!");
+  }
   // switch players
-  // TODO: switch currPlayer 1 <-> 2
+  // switch currPlayer 1 <-> 2
+  // currPlayer === 1 ? currPlayer = 2 : currPlayer = 1;
+  currPlayer = currPlayer === 1 ? 2 : 1;
 }
 
 /** Start game. */
